@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import time
+
+now = time.time()
 
 #import Testing
 from dataProcessing import *
@@ -9,30 +12,31 @@ from dataProcessing import *
 # x gibt Zahl an: 0 - Nummer | 1 - Frequenz [Hz] | 2 - T/R [dB] | 3 - PHASE [deg]
 # y gibt nummer der Mesung an (0-400)
 
-# Farben in matplotlib: b ; g ; r ; c ; m ; y ; b
+# Farben in matplotlib: b ; g ; r ; c ; y ; m
 # Linien in matplotlib: - ; -- ; -. ; :
 # Marker in matplotlib: o ; s ; D ; ^ ; x ; * ; +
 #-----------------------------------------------------------------------------------------------------------------------
 # VARIABLEN ZUR SCHNELLEN AUSWERTUNG:
+titelName = "Variation Proben C = 1pF und 4.7pF Range 0-500"
 messdaten = [
 #(r"30.04.2020\backgroundKrokparalell.txt", "r-."),
 #(r"30.04.2020\backgroundKrokauseinander.txt", "g-."),
-#(r"07.05.2020\0.8isoSil2C47KerkoRange90-120.txt", "b-"),
-#(r"07.05.2020\0.8isoSil2C47KerkoRange90-120S13495.txt", "c-"),
-(r"07.05.2020\0.8isoSil4C4.7KeramikRange190-220.txt", "r-"),
-(r"07.05.2020\0.8isoSil4C4.7KeramikRange190-220S13495.txt", "m-"),
-(r"07.05.2020\0.8isoSil4C4.7KeramikRange190-220S13440.txt", "c-"),
-(r"07.05.2020\0.8isoSil4C4.7KeramikRange190-220S13504.txt", "b-"),
-#(r"07.05.2020\0.8isoSil4C4.7KeramikRange190-220S13498.txt", "y-"),
-(r"07.05.2020\0.8isoSil8C1KeramikRange230-250.txt", "g-"),
-(r"07.05.2020\0.8isoSil8C1KeramikRange230-250S13495.txt", "y-"),
+(r"15.05.2020\0.8isoSil4C4.7KeramikRange0-500.txt", "r-"),
+(r"15.05.2020\0.8isoSil4C4.7KeramikRange0-500S13440.txt", "g-"),
+(r"15.05.2020\0.8isoSil4C4.7KeramikRange0-500S13504.txt", "b-"),
+(r"15.05.2020\0.8isoSil4C4.7KeramikRange0-500S13489.txt", "c-"),
+(r"15.05.2020\0.8isoSil4C4.7KeramikRange0-500S13498.txt", "y-"),
+(r"15.05.2020\0.8isoSil8C1KeramikRange0-500.txt", "r-"),
+(r"15.05.2020\0.8isoSil8C1KeramikRange0-500S13440.txt", "g-"),
+(r"15.05.2020\0.8isoSil8C1KeramikRange0-500S13504.txt", "b-"),
+(r"15.05.2020\0.8isoSil8C1KeramikRange0-500S13489.txt", "c-"),
+(r"15.05.2020\0.8isoSil8C1KeramikRange0-500S13498.txt", "y-"),
 
-    #(r"24.04.2020\rotCu5C10Range0-500.txt", "b-")
+#(r"15.05.2020\0.8isoSil8C1KeramikRange0-500S13495.txt", "m-"),
+#(r"15.05.2020\0.8isoSil8C1KeramikRange0-500S13461.txt", "r-."),
 ]
 
-titelName = "Variation von C und N bei 0.8isoSil + Samples 07.05  Range in f_R + Phase"
-
-willPrint = True
+willPrint = False
 #-----------------------------------------------------------------------------------------------------------------------
 setTitle(titelName)
 
@@ -51,4 +55,5 @@ if willPrint:
     #plt.savefig(r'data\{}.eps'.format(titelName), format='eps')     # Um es später in LaTeX einzuarbeiten
     plt.savefig(r'data\{}.png'.format(titelName))
 
+print('Time: ', round(time.time() - now, 3), 's')
 plt.show()

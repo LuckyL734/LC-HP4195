@@ -9,7 +9,7 @@ print("DATAPROCESSING BEGINNT AB HIER")
 #plt.figure(figsize=(13,7), facecolor="white")
 fig, ax = plt.subplots(1, 1, figsize=(18,7))
 
-showPhase = True
+showPhase = False
 titelName = ""
 
 
@@ -23,7 +23,7 @@ plt.xlim(1, 500)
 plt.xlabel(r'$f\, \, [MHz]$')
 # Für T/R
 plt.ylabel(r'$\frac{T}{R} \,\, [dB]$')
-plt.ylim(-50, -15)
+plt.ylim(-60, 5)
 
 if showPhase:
     ax2 = ax.twinx()
