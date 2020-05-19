@@ -17,21 +17,20 @@ from dataProcessing import *
 # Marker in matplotlib: o ; s ; D ; ^ ; x ; * ; +
 #-----------------------------------------------------------------------------------------------------------------------
 # VARIABLEN ZUR SCHNELLEN AUSWERTUNG:
-titelName = "Variation Proben C = 1pF und 4.7pF Range 0-500"
+titelName = "Variation Proben C=1pF, N=8 Range 0-500"
 messdaten = [
 #(r"30.04.2020\backgroundKrokparalell.txt", "r-."),
 #(r"30.04.2020\backgroundKrokauseinander.txt", "g-."),
 (r"15.05.2020\0.8isoSil4C4.7KeramikRange0-500.txt", "r-"),
-(r"15.05.2020\0.8isoSil4C4.7KeramikRange0-500S13440.txt", "g-"),
-(r"15.05.2020\0.8isoSil4C4.7KeramikRange0-500S13504.txt", "b-"),
-(r"15.05.2020\0.8isoSil4C4.7KeramikRange0-500S13489.txt", "c-"),
-(r"15.05.2020\0.8isoSil4C4.7KeramikRange0-500S13498.txt", "y-"),
-(r"15.05.2020\0.8isoSil8C1KeramikRange0-500.txt", "r-"),
-(r"15.05.2020\0.8isoSil8C1KeramikRange0-500S13440.txt", "g-"),
-(r"15.05.2020\0.8isoSil8C1KeramikRange0-500S13504.txt", "b-"),
-(r"15.05.2020\0.8isoSil8C1KeramikRange0-500S13489.txt", "c-"),
-(r"15.05.2020\0.8isoSil8C1KeramikRange0-500S13498.txt", "y-"),
-
+# (r"15.05.2020\0.8isoSil4C4.7KeramikRange0-500S13440.txt", "g-"),
+# (r"15.05.2020\0.8isoSil4C4.7KeramikRange0-500S13504.txt", "b-"),
+# (r"15.05.2020\0.8isoSil4C4.7KeramikRange0-500S13489.txt", "c-"),
+# (r"15.05.2020\0.8isoSil4C4.7KeramikRange0-500S13498.txt", "y-"),
+ (r"15.05.2020\0.8isoSil8C1KeramikRange0-500.txt", "r-"),
+ (r"15.05.2020\0.8isoSil8C1KeramikRange0-500S13440.txt", "g-"),
+# (r"15.05.2020\0.8isoSil8C1KeramikRange0-500S13504.txt", "b-"),
+# (r"15.05.2020\0.8isoSil8C1KeramikRange0-500S13489.txt", "c-"),
+# (r"15.05.2020\0.8isoSil8C1KeramikRange0-500S13498.txt", "y-"),
 #(r"15.05.2020\0.8isoSil8C1KeramikRange0-500S13495.txt", "m-"),
 #(r"15.05.2020\0.8isoSil8C1KeramikRange0-500S13461.txt", "r-."),
 ]
@@ -40,12 +39,17 @@ willPrint = False
 #-----------------------------------------------------------------------------------------------------------------------
 setTitle(titelName)
 
-for data in messdaten:
-    plotdata(data[0], data[1])
+for textData in messdaten:
+    plotData(textData[0], textData[1],fit=True)
+
+#data = readData(textData[0])
+#fitData(data)
+
+
 
 #plt.legend(loc="best")
 fig.legend(loc="center right",        # Position of the legend
-           borderaxespad=5,         # Add little spacing around the legend box
+           borderaxespad=3,           # Add little spacing around the legend box
            title="Legende:")
 
 plt.subplots_adjust(right=0.7, left=0.04)

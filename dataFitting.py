@@ -1,50 +1,24 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.optimize import curve_fit
 import math
 
-R1 = 50
-R2 = 50
-C1 = 10**-10
-L1 = 6.68*10**-6
-param = {"R1": 50,
-        "R2": 50,
-        "C1": 10**-9,
-        "L1":6.68*10**-6}
+def fitFunction(freq, r_w, l_para, l_lc, c_lc=4.7e-12):
+    omega = 2.*np.pi*freq
+    Z = 1.j*omega*l_para + 1./(1.j*omega*c_lc + 1./(r_w + 1.j*omega*l_lc))
+    return 20*np.log10(abs(50./(Z + 50.)))
 
-print(param["R1"], " Daten R1")
+def fitData(data):
+    data = [np.array(i[1:]) for i in data]
 
-print("R1 = " , R1 , " , R2 = " , R2 , " , C1 = " , C1 , " , L1 = " , L1)
+    x = np.linspace(1.e6, 500.e6, 10000)
+    y = fitFunction(x, 1., 50.e-9, 100.e-9, 4.7e-12)
+    plt.plot(x, y)                          # Plotte mit geschätzte Werte
+    plt.plot(data[1], data[2])              # Plotte originale Daten
 
-# t = np.arange(0, 5, 0.2)
-# plt.plot(t, t, "r--", t, t**2, "bs", t, t*5, "g^")
-# plt.axis([0,6,0,20])
-# print(t)
+    indices = data[1] < 300.e6
+    popt, pcov = curve_fit(fitFunction, data[1][indices], data[2][indices], p0=(1., 50.e-9, 100.e-9, 4.7e-12))
+    print(popt)
+    print(np.sqrt(np.diag(pcov)))
 
-# data = {"a": np.arange(50),
-#         "c": np.random.randint(0,50,50),
-#         "d": np.random.randn(50)}
-# data["b"] = data["a"]+10* np.random.randn(50)
-# data["d"] = np.abs(data["d"]) * 50
-#
-# plt.scatter("a", "b", c="c", s="d", data=data)
-# plt.xlabel("entry a")
-# plt.ylabel("entry b")
-
-w = np.logspace(3.0, 9.0, num=1000)
-# print("w = ", w)
-
-#def Z(t):
-#    return 1 / np.sqrt( R1**2 + 1/ (w**2*C1**2 + 1 / (R2**2 + w**2 * L1**2)) + 2*R1*R2 / (w**2 * C1**2 * (R2**2 + w**2 * L1**2) - 2 * w**2 * L1 * C1 + 1) )
-
-def Z(t):
-    return 1 / abs(R1 + 1/(1.j * w * C1 + 1 / (R2 + 1.j * w * L1) ) )
-
-plt.figure(figsize=(13,7), facecolor="white")
-plt.plot(w/(2*np.pi), Z(w), "r-")
-plt.xscale("log")
-plt.yscale("log")
-plt.title('Simulation')
-
-
-plt.show()
-print("FERTIG")
+    plt.plot(data[1], fitFunction(data[1], *popt))   # Plotte Fitfunktion
