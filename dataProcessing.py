@@ -2,7 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import ast
 from scipy.optimize import curve_fit
-import math
+from fitFunctions import *
+import cmath
+import itertools
 
 #import fitting
 print("DATAPROCESSING BEGINNT AB HIER")
@@ -16,6 +18,7 @@ with open('sampleDictionary.txt', 'r') as f:
 fig, ax = plt.subplots(1, 1, figsize=(18,7))
 
 showPhase = False
+testFit = False
 titelName = ""
 
 
@@ -71,6 +74,7 @@ def readData(dateiname):
 # y gibt nummer der Mesung an (0-400)
 def plotData(dateiname, linestyle, fit=False):
     data = readData(dateiname)
+    #print("Normal data", data)
     minimumfreq = data[1][np.array(data[2]).argmin()]/10**6
     minimumTrans = data[2][np.array(data[2]).argmin()]
     if dateiname[-10:-9] == "S":
@@ -90,30 +94,83 @@ def plotData(dateiname, linestyle, fit=False):
     if fit:
         fitData(data, linestyle=linestyle, dateiname=dateiname)
 
-print("DATAPROCESSING ENDET HIER")
+def plotCombineData(dateiname1, dateiname2, linestyle, fit=False):
+    data1 = readData(dateiname1)
+    data2 = readData(dateiname2)
+    cdata1 = []
+    cdata2 = []
+    data = [[], [], [], []]
+    for i in range(0, len(data1[0])):
+        cdata1.append((data1[0][i],data1[1][i],data1[2][i],data1[3][i]))
+        cdata1.append((data2[0][i], data2[1][i], data2[2][i], data2[3][i]))
+    cdata = cdata1+cdata2
+    cdata.sort(key= lambda i: i[1])
+    for i in range(0, len(cdata)):
+        data[0].append(cdata[i][0])
+        data[1].append(cdata[i][1])
+        data[2].append(cdata[i][2])
+        data[3].append(cdata[i][3])
 
-def fitFunction(freq, r_w, l_para, l_lc, c_lc=4.7e-12):
-    omega = 2.*np.pi*freq
-    Z = 1.j*omega*l_para + 1./(1.j*omega*c_lc + 1./(r_w + 1.j*omega*l_lc))
-    return 20*np.log10(abs(50./(Z + 50.)))
+    #print("Combined data",data)
+    minimumfreq = data[1][np.array(data[2]).argmin()] / 10 ** 6
+    minimumTrans = data[2][np.array(data[2]).argmin()]
+    if dateiname1[-10:-9] == "S":
+        # Show Sample data in legend
+        ax.plot(np.array(data[1]) / 10 ** 6, data[2], linestyle,
+                label=r"{} {}$f_R = {} \, MHz$ ; $T_m = {} \,dB${}{}".format(dateiname1[11:-4:], "\n",
+                                                                             round(minimumfreq, 2),
+                                                                             round(minimumTrans, 2), "\n",
+                                                                             samples[dateiname1[-9:-4]]))
+    else:
+        # No Sample found
+        ax.plot(np.array(data[1]) / 10 ** 6, data[2], linestyle,
+                label=r"{} {}$f_R = {} \, MHz$ ; $T_m = {} \,dB$".format(dateiname1[11:-4:], "\n", round(minimumfreq, 2),
+                                                                         round(minimumTrans, 2)))
+    if showPhase:
+        ax2.plot(np.array(data[1]) / 10 ** 6, data[3], linestyle + '.',
+                 label=r"{} {}Phase".format(dateiname1[11:-4:], "\n"))
+
+    if fit:
+        fitData(data, linestyle=linestyle, dateiname=dateiname1)
+
+
+
+print("DATAPROCESSING ENDET HIER")
 
 def fitData(data, linestyle="b-", dateiname="Fitfunktion"):
     data = [np.array(i[1:]) for i in data]
 
     x = np.linspace(1.e6, 500.e6, 10000)
-    y = fitFunction(x, 1., 50.e-9, 100.e-9, 4.7e-12)
-    plt.plot(x/10**6, y)                          # Plotte mit Startwerten
-    #plt.plot(data[1], data[2])              # Plotte originale Daten
+    y = fitFunction(x, 1., 50.e-9, 100.e-9, 4.7e-12, 4)
+    ax.plot(x/10**6, y, "c-")                          # Plotte mit Startwerten
 
-    indices = data[1] < 350.e6
-    popt, pcov = curve_fit(fitFunction, data[1][indices], data[2][indices], p0=(1., 50.e-9, 100.e-9, 4.7e-12))
-    print(popt)
-    print(np.sqrt(np.diag(pcov)))
+    indices = data[1] < 280.e6
+    popt, pcov = curve_fit(fitFunction, data[1][indices], data[2][indices], p0=(0.2, 90e-9, 79.e-9, 7.3e-12))
     err = np.sqrt(np.diag(pcov))
+    print(popt)
+
 
     ax.plot(np.array(np.linspace(1.e6, 500.e6, 1000)) / 10**6, np.array(fitFunction(np.linspace(1.e6, 500.e6, 1000), *popt)), linestyle+".",
-            label= r"Fit zu {} {}$R_W = {}({}) \, \Omega$ ; $L_p = {}({}) \,nH$ {}$L = {}({}) nH$ ; $C = {}({})pF$".format(dateiname[11:-4:],"\n",round(popt[0],3),
-                                                                                        round(err[0],3),round(popt[1]*10**9,2),round(err[1]*10**9,2),"\n",round(popt[2]*10**9,2),round(err[2]*10**9,2),round(popt[3]*10**12,2),round(err[3]*10**12,2)))
-                                                                              # Plotte Fitfunktion
+            label= r"Fit zu {} {}$R_W = {}({}) \, \Omega$ ; $L_p = {}({}) \,nH$ {}$L = {}({}) nH$ ; $C = {}({})pF$ ; R_p = {}({})".format(dateiname[11:-4:],"\n",round(popt[0],3),
+                                                                                        round(err[0],3),round(popt[1]*10**9,2),round(err[1]*10**9,2),"\n",round(popt[2]*10**9,2),round(err[2]*10**9,2),round(popt[3]*10**12,2),round(err[3]*10**12,2),5.05,"const"))
+    if testFit:
+        popt, pcov = curve_fit(fitFunctionTest, data[1][indices], data[2][indices], p0=(1., 50.e-9, 100.e-9, 4.7e-12))
+        err = np.sqrt(np.diag(pcov))
+        #print(popt)
+        #print(np.sqrt(np.diag(pcov)))
+
+        ax.plot(np.array(np.linspace(1.e6, 500.e6, 1000)) / 10 ** 6,
+                np.array(fitFunctionTest(np.linspace(1.e6, 500.e6, 1000), *popt)), linestyle[0:1] + ":",
+                label=r"FitTest zu {} {}$R_W = {}({}) \, \Omega$ ; $L_p = {}({}) \,nH$ {}$L = {}({}) nH$ ; $C = {}({})pF$".format(
+                    dateiname[11:-4:], "\n", round(popt[0], 3),
+                    round(err[0], 3), round(popt[1] * 10 ** 9, 2), round(err[1] * 10 ** 9, 2), "\n",
+                    round(popt[2] * 10 ** 9, 2), round(err[2] * 10 ** 9, 2), round(popt[3] * 10 ** 12, 2),
+                    round(err[3] * 10 ** 12, 2)))
+
+    if showPhase:
+        ax2.plot(np.array(np.linspace(1.e6, 500.e6, 1000)) / 10**6, np.array(fitFunctionPhase(np.linspace(1.e6, 500.e6, 1000), *popt)), linestyle[0:1]+"-")
+        ax2.plot(np.array(np.linspace(1.e6, 500.e6, 1000)) / 10 ** 6,
+             np.array(fitFunctionPhase2(np.linspace(1.e6, 500.e6, 1000), *popt)), linestyle[0:1] + ":")
+
 
 ax.plot(np.zeros(100)+300, np.linspace(-60,10, 100), "b:")
