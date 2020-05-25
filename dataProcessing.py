@@ -17,7 +17,7 @@ with open('sampleDictionary.txt', 'r') as f:
 #plt.figure(figsize=(13,7), facecolor="white")
 fig, ax = plt.subplots(1, 1, figsize=(18,7))
 
-showPhase = False
+showPhase = True
 testFit = False
 titelName = ""
 
@@ -141,11 +141,11 @@ def fitData(data, linestyle="b-", dateiname="Fitfunktion"):
     data = [np.array(i[1:]) for i in data]
 
     x = np.linspace(1.e6, 500.e6, 10000)
-    y = fitFunction(x, 1., 50.e-9, 100.e-9, 4.7e-12, 4)
+    y = fitFunction(x, 1., 50.e-9, 100.e-9, 4.7e-12)
     ax.plot(x/10**6, y, "c-")                          # Plotte mit Startwerten
 
     indices = data[1] < 280.e6
-    popt, pcov = curve_fit(fitFunction, data[1][indices], data[2][indices], p0=(0.2, 90e-9, 79.e-9, 7.3e-12))
+    popt, pcov = curve_fit(fitFunction, data[1][indices], data[2][indices], p0=(0.1e-3, 90e-9, 79.e-9, 7.3e-12)) #p0=(0.1e-3, 90e-9, 79.e-9, 7.3e-12, 0.1, 1e-9 , 50)
     err = np.sqrt(np.diag(pcov))
     print(popt)
 
@@ -168,9 +168,9 @@ def fitData(data, linestyle="b-", dateiname="Fitfunktion"):
                     round(err[3] * 10 ** 12, 2)))
 
     if showPhase:
-        ax2.plot(np.array(np.linspace(1.e6, 500.e6, 1000)) / 10**6, np.array(fitFunctionPhase(np.linspace(1.e6, 500.e6, 1000), *popt)), linestyle[0:1]+"-")
-        ax2.plot(np.array(np.linspace(1.e6, 500.e6, 1000)) / 10 ** 6,
-             np.array(fitFunctionPhase2(np.linspace(1.e6, 500.e6, 1000), *popt)), linestyle[0:1] + ":")
+        ax2.plot(np.array(np.linspace(1.e6, 500.e6, 1000)) / 10**6, np.array(fitFunctionPhase2(np.linspace(1.e6, 500.e6, 1000), *popt)), linestyle[0:1]+"-")
+        #ax2.plot(np.array(np.linspace(1.e6, 500.e6, 1000)) / 10 ** 6,
+        #     np.array(fitFunctionPhase(np.linspace(1.e6, 500.e6, 1000), *popt)), linestyle[0:1] + ":")
 
 
 ax.plot(np.zeros(100)+300, np.linspace(-60,10, 100), "b:")
