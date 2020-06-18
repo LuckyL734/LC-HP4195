@@ -5,6 +5,7 @@ from scipy.optimize import curve_fit
 from fitFunctions import *
 import cmath
 import itertools
+import csv
 
 #import fitting
 print("DATAPROCESSING BEGINNT AB HIER")
@@ -18,9 +19,20 @@ with open('sampleDictionary.txt', 'r') as f:
 fig, ax = plt.subplots(1, 1, figsize=(18,7))
 
 showPhase = True
+writeCSV = True
 testFit = False
 titelName = ""
 
+csvfile = open('fitdata.csv', 'w', newline='')
+fieldnames = ['Probename', 'Datum', 'f_R', 'T_m','r_W', 'L_p', 'L', 'C', 'r_p']
+writer = csv.writer(csvfile, delimiter=";")
+writer.writerow(fieldnames)
+
+currentLine = []
+
+
+def closeCSV():
+    csvfile.close()
 
 def setTitle(tl):
     global titelName
@@ -127,8 +139,12 @@ def plotCombineData(dateiname1, dateiname2, linestyle, fit=False):
                 label=r"{} {}$f_R = {} \, MHz$ ; $T_m = {} \,dB$".format(dateiname1[11:-4:], "\n", round(minimumfreq, 2),
                                                                          round(minimumTrans, 2)))
     if showPhase:
-        ax2.plot(np.array(data[1]) / 10 ** 6, data[3], linestyle + '.',
-                 label=r"{} {}Phase".format(dateiname1[11:-4:], "\n"))
+        ax2.plot(np.array(data[1]) / 10 ** 6, data[3], linestyle + '.',)
+             #    label=r"{} {}Phase".format(dateiname1[11:-4:], "\n"))
+
+    if writeCSV:
+        for x in [dateiname1[-15:-4], dateiname1[:10], round(minimumfreq, 2), round(minimumTrans, 2)]:
+            currentLine.append(x)
 
     if fit:
         fitData(data, linestyle=linestyle, dateiname=dateiname1)
@@ -141,18 +157,18 @@ def fitData(data, linestyle="b-", dateiname="Fitfunktion"):
     data = [np.array(i[1:]) for i in data]
 
     x = np.linspace(1.e6, 500.e6, 10000)
-    y = fitFunction(x, 1., 50.e-9, 100.e-9, 4.7e-12)
-    ax.plot(x/10**6, y, "c-")                          # Plotte mit Startwerten
+    y = fitFunction(x, 0.1e-3, 90e-9, 190.e-9, 7.3e-12, 1e-3)
+    #ax.plot(x/10**6, y, "c-")                          # Plotte mit Startwerten
 
     indices = data[1] < 280.e6
-    popt, pcov = curve_fit(fitFunction, data[1][indices], data[2][indices], p0=(0.1e-3, 90e-9, 79.e-9, 7.3e-12)) #p0=(0.1e-3, 90e-9, 79.e-9, 7.3e-12, 0.1, 1e-9 , 50)
+    popt, pcov = curve_fit(fitFunction, data[1][indices], data[2][indices], p0=(0.1e-3, 90e-9, 79.e-9, 7.3e-12, 1e-3)) #p0=(0.1e-3, 90e-9, 79.e-9, 7.3e-12, 1e-3)
     err = np.sqrt(np.diag(pcov))
     print(popt)
 
 
-    ax.plot(np.array(np.linspace(1.e6, 500.e6, 1000)) / 10**6, np.array(fitFunction(np.linspace(1.e6, 500.e6, 1000), *popt)), linestyle+".",
+    ax.plot(np.array(np.linspace(1.e6, 500.e6, 10000)) / 10**6, np.array(fitFunction(np.linspace(1.e6, 500.e6, 10000), *popt)), linestyle+".",
             label= r"Fit zu {} {}$R_W = {}({}) \, \Omega$ ; $L_p = {}({}) \,nH$ {}$L = {}({}) nH$ ; $C = {}({})pF$ ; R_p = {}({})".format(dateiname[11:-4:],"\n",round(popt[0],3),
-                                                                                        round(err[0],3),round(popt[1]*10**9,2),round(err[1]*10**9,2),"\n",round(popt[2]*10**9,2),round(err[2]*10**9,2),round(popt[3]*10**12,2),round(err[3]*10**12,2),5.05,"const"))
+                                                                                        round(err[0],3),round(popt[1]*10**9,2),round(err[1]*10**9,2),"\n",round(popt[2]*10**9,2),round(err[2]*10**9,2),round(popt[3]*10**12,2),round(err[3]*10**12,2),round(popt[4],2),round(err[4],2)))
     if testFit:
         popt, pcov = curve_fit(fitFunctionTest, data[1][indices], data[2][indices], p0=(1., 50.e-9, 100.e-9, 4.7e-12))
         err = np.sqrt(np.diag(pcov))
@@ -172,5 +188,12 @@ def fitData(data, linestyle="b-", dateiname="Fitfunktion"):
         #ax2.plot(np.array(np.linspace(1.e6, 500.e6, 1000)) / 10 ** 6,
         #     np.array(fitFunctionPhase(np.linspace(1.e6, 500.e6, 1000), *popt)), linestyle[0:1] + ":")
 
+    if writeCSV:
+        for x in [round(popt[0],3),round(popt[1]*10**9,2),round(popt[2]*10**9,2) ,round(popt[3]*10**12,2),round(popt[4],2)]:
+            currentLine.append(x)
+        writer.writerow(currentLine)
+        currentLine.clear()
 
-ax.plot(np.zeros(100)+300, np.linspace(-60,10, 100), "b:")
+
+ax.plot(np.zeros(100)+280, np.linspace(-60,10, 100), "b:")
+ax.plot(np.linspace(-60,500e6, 100), np.zeros(100), "b:")

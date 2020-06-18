@@ -5,6 +5,8 @@ import pathlib
 
 dateiname = r"15.05.2020\0.8isoSil8C1KeramikRange0-500.txt"
 
+print(np.linspace(50,2000,15))
+
 def read_file(path):
     # path = pathlib.Path(path)
     # if not path.is_file():
