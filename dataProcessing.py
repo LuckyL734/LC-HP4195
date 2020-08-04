@@ -18,7 +18,7 @@ with open('sampleDictionary.txt', 'r') as f:
 #plt.figure(figsize=(13,7), facecolor="white")
 fig, ax = plt.subplots(1, 1, figsize=(18,7))
 
-showPhase = True
+showPhase = False
 writeCSV = True
 testFit = False
 titelName = ""
@@ -126,18 +126,18 @@ def plotCombineData(dateiname1, dateiname2, linestyle, fit=False):
     #print("Combined data",data)
     minimumfreq = data[1][np.array(data[2]).argmin()] / 10 ** 6
     minimumTrans = data[2][np.array(data[2]).argmin()]
-    if dateiname1[-10:-9] == "S":
-        # Show Sample data in legend
-        ax.plot(np.array(data[1]) / 10 ** 6, data[2], linestyle,
-                label=r"{} {}$f_R = {} \, MHz$ ; $T_m = {} \,dB${}{}".format(dateiname1[11:-4:], "\n",
-                                                                             round(minimumfreq, 2),
-                                                                             round(minimumTrans, 2), "\n",
-                                                                             samples[dateiname1[-9:-4]]))
-    else:
-        # No Sample found
-        ax.plot(np.array(data[1]) / 10 ** 6, data[2], linestyle,
-                label=r"{} {}$f_R = {} \, MHz$ ; $T_m = {} \,dB$".format(dateiname1[11:-4:], "\n", round(minimumfreq, 2),
-                                                                         round(minimumTrans, 2)))
+    # if dateiname1[-10:-9] == "S":
+    #     # Show Sample data in legend
+    #     ax.plot(np.array(data[1]) / 10 ** 6, data[2], linestyle,
+    #             label=r"{} {}$f_R = {} \, MHz$ ; $T_m = {} \,dB${}{}".format(dateiname1[11:-4:], "\n",
+    #                                                                          round(minimumfreq, 2),
+    #                                                                          round(minimumTrans, 2), "\n",
+    #                                                                          samples[dateiname1[-9:-4]]))
+    # else:
+    #     # No Sample found
+    #     ax.plot(np.array(data[1]) / 10 ** 6, data[2], linestyle,
+    #             label=r"{} {}$f_R = {} \, MHz$ ; $T_m = {} \,dB$".format(dateiname1[11:-4:], "\n", round(minimumfreq, 2),
+    #                                                                      round(minimumTrans, 2)))
     if showPhase:
         ax2.plot(np.array(data[1]) / 10 ** 6, data[3], linestyle + '.',)
              #    label=r"{} {}Phase".format(dateiname1[11:-4:], "\n"))
@@ -160,15 +160,28 @@ def fitData(data, linestyle="b-", dateiname="Fitfunktion"):
     y = fitFunction(x, 0.1e-3, 90e-9, 190.e-9, 7.3e-12, 1e-3)
     #ax.plot(x/10**6, y, "c-")                          # Plotte mit Startwerten
 
-    indices = data[1] < 280.e6
-    popt, pcov = curve_fit(fitFunction, data[1][indices], data[2][indices], p0=(0.1e-3, 90e-9, 79.e-9, 7.3e-12, 1e-3)) #p0=(0.1e-3, 90e-9, 79.e-9, 7.3e-12, 1e-3)
+    indices = data[1] < 200.e6
+    # MAKING THE FITS (normal)
+    popt, pcov = curve_fit(fitFunction, data[1][indices], data[2][indices], p0=(0.1e-3, 108e-9, 254.e-9, 5.85e-12, 1e-3)) #p0=(0.1e-3, 90e-9, 79.e-9, 7.3e-12, 1e-3)
     err = np.sqrt(np.diag(pcov))
     print(popt)
-
-
     ax.plot(np.array(np.linspace(1.e6, 500.e6, 10000)) / 10**6, np.array(fitFunction(np.linspace(1.e6, 500.e6, 10000), *popt)), linestyle+".",
             label= r"Fit zu {} {}$R_W = {}({}) \, \Omega$ ; $L_p = {}({}) \,nH$ {}$L = {}({}) nH$ ; $C = {}({})pF$ ; R_p = {}({})".format(dateiname[11:-4:],"\n",round(popt[0],3),
                                                                                         round(err[0],3),round(popt[1]*10**9,2),round(err[1]*10**9,2),"\n",round(popt[2]*10**9,2),round(err[2]*10**9,2),round(popt[3]*10**12,2),round(err[3]*10**12,2),round(popt[4],2),round(err[4],2)))
+
+    # MAKING THE FITS (static l_p, r_p)
+    # popt, pcov = curve_fit(fitFunctionStatic, data[1][indices], data[2][indices],
+    #                        p0=(0.1e-3, 254.e-9, 5.85e-12))  # p0=(0.1e-3, 90e-9, 79.e-9, 7.3e-12, 1e-3)
+    # err = np.sqrt(np.diag(pcov))
+    # print(popt)
+    # ax.plot(np.array(np.linspace(1.e6, 500.e6, 10000)) / 10 ** 6,
+    #         np.array(fitFunctionStatic(np.linspace(1.e6, 500.e6, 10000), *popt)), linestyle + ".",
+    #         label=r"Fit zu {} {}$R_W = {}({}) \, \Omega$ ; $L_p = 105.611 \,nH$ {}$L = {}({}) nH$ ; $C = {}({})pF$ ; R_p = 4.939".format(
+    #             dateiname[11:-4:], "\n", round(popt[0], 3),
+    #             round(err[0], 3), "\n",
+    #             round(popt[1] * 10 ** 9, 2), round(err[1] * 10 ** 9, 2), round(popt[2] * 10 ** 12, 2),
+    #             round(err[2] * 10 ** 12, 2)))
+
     if testFit:
         popt, pcov = curve_fit(fitFunctionTest, data[1][indices], data[2][indices], p0=(1., 50.e-9, 100.e-9, 4.7e-12))
         err = np.sqrt(np.diag(pcov))
@@ -189,11 +202,16 @@ def fitData(data, linestyle="b-", dateiname="Fitfunktion"):
         #     np.array(fitFunctionPhase(np.linspace(1.e6, 500.e6, 1000), *popt)), linestyle[0:1] + ":")
 
     if writeCSV:
+        #Normal with all Parameters
         for x in [round(popt[0],3),round(popt[1]*10**9,2),round(popt[2]*10**9,2) ,round(popt[3]*10**12,2),round(popt[4],2)]:
             currentLine.append(x)
+        # With only 3 Parameters
+        # for x in [round(popt[0], 3), 105.611, round(popt[1] * 10 ** 9, 2),
+        #             round(popt[2] * 10 ** 12, 2), 4.939]:
+        #     currentLine.append(x)
         writer.writerow(currentLine)
         currentLine.clear()
 
 
-ax.plot(np.zeros(100)+280, np.linspace(-60,10, 100), "b:")
+ax.plot(np.zeros(100)+300, np.linspace(-60,10, 100), "b:")
 ax.plot(np.linspace(-60,500e6, 100), np.zeros(100), "b:")

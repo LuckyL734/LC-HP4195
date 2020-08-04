@@ -17,21 +17,59 @@ from dataProcessing import *
 # Marker in matplotlib: o ; s ; D ; ^ ; x ; * ; +
 #-----------------------------------------------------------------------------------------------------------------------
 # VARIABLEN ZUR SCHNELLEN AUSWERTUNG:
-titelName = "Variation Proben C=4.7pF, N=4 Range 0-500 kombiniert 190-220 (10.06.2020) 280"
+titelName = "Probenmessreihe C=4.7pF, N=8 Range 0-500 kombiniert 110-150 (25.06.2020) 280"
 messdaten = [
 #(r"30.04.2020\backgroundKrokparalell.txt", "r-."),
 #(r"30.04.2020\backgroundKrokauseinander.txt", "g-."),
-(r"10.06.2020\0.8isoSil4C4.7Range0-500.txt", "r-"),
-(r"10.06.2020\0.8isoSil4C4.7Range0-500S13440.txt", "g-"),
-(r"10.06.2020\0.8isoSil4C4.7Range0-500S13946.txt", "b-"),
-(r"10.06.2020\0.8isoSil4C4.7Range0-500RundS14827.txt", "c-"),
-(r"10.06.2020\0.8isoSil4C4.7Range0-500S14260.txt", "y-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500.txt", "r-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500S13440.txt", "g-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500S13946.txt", "b-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500RundS14827.txt", "c-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500S14260.txt", "y-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500S12368.txt", "r-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500S13504.txt", "g-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500langS14541.txt", "b-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500S13911.txt", "c-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500langS12306.txt", "y-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500S13994.txt", "r-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500S13382.txt", "g-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500langS13372.txt", "b-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500S13406.txt", "c-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500kleinRundS14010.txt", "y-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500S13069.txt", "r-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500viertelS14675.txt", "g-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500S12859.txt", "b-"),
+
+(r"25.06.2020\0.8isoSil8C4.7Range0-500S13495.txt", "y-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500S13461.txt", "r-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500S13489.txt", "g-"),
+(r"25.06.2020\0.8isoSil8C4.7Range0-500S13498.txt", "b-"),
+
 #(r"30.04.2020\nurkabel10cm.txt", "r-."),
-(r"10.06.2020\0.8isoSil4C4.7Range190-220.txt", "r-"),
-(r"10.06.2020\0.8isoSil4C4.7Range190-220S13440.txt", "g-"),
-(r"10.06.2020\0.8isoSil4C4.7Range190-220S13946.txt", "b-"),
-(r"10.06.2020\0.8isoSil4C4.7Range190-220RundS14827.txt", "c-"),
-(r"10.06.2020\0.8isoSil4C4.7Range190-220S14260.txt", "y-"),
+
+(r"25.06.2020\0.8isoSil8C4.7Range110-150.txt", "r-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150S13440.txt", "g-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150S13946.txt", "b-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150RundS14827.txt", "c-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150S14260.txt", "y-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150S12368.txt", "r-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150S13504.txt", "g-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150langS14541.txt", "b-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150S13911.txt", "c-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150langS12306.txt", "y-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150S13994.txt", "r-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150S13382.txt", "g-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150langS13372.txt", "b-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150S13406.txt", "c-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150kleinRundS14010.txt", "y-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150S13069.txt", "r-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150viertelS14675.txt", "g-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150S12859.txt", "b-"),
+
+(r"25.06.2020\0.8isoSil8C4.7Range110-150S13495.txt", "y-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150S13461.txt", "r-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150S13489.txt", "g-"),
+(r"25.06.2020\0.8isoSil8C4.7Range110-150S13498.txt", "b-"),
 ]
 
 willPrint = False
@@ -44,8 +82,8 @@ setTitle(titelName)
 #plotData(*(r"30.04.2020\nurkabel10cm.txt", "r-."))
 #plotCombineData(messdaten[0][0], messdaten[1][0], messdaten[0][1], fit=True)
 
-for i in range(0,5):
-  plotCombineData(messdaten[i][0], messdaten[i+5][0], messdaten[i][1], fit=True)
+for i in range(0,22):
+  plotCombineData(messdaten[i][0], messdaten[i+22][0], messdaten[i][1], fit=True)
 
 #for i in range(0,5):
 #  plotCombineData(messdaten[i+10][0], messdaten[i+15][0], messdaten[i+10][1], fit=False)
